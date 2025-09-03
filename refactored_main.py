@@ -3,7 +3,7 @@ Heart Disease Prediction - Main Execution Script
 ===============================================
 A comprehensive machine learning pipeline for heart disease prediction.
 
-Author: Your Name
+Author: Loyanganba Ngathem
 Date: 2025
 """
 
