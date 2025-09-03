@@ -9,12 +9,12 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 setup(
     name="heart-disease-prediction",
     version="1.0.0",
-    author="Your Name",
-    author_email="your.email@example.com",
+    author="Loyanganmba Ngathem",
+    author_email="loyanganba.ngathem@gmail.com",
     description="A comprehensive machine learning project for heart disease prediction",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/heart-disease-prediction",
+    url="https://github.com/LoyaNg-rgb/Heart-Disease-Prediction-using-Machine-Learning",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 5 - Production/Stable",
