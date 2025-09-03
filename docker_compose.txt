@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  heart-disease-prediction:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: heart-disease-predictor
+    volumes:
+      # Mount data directory for input files
+      - ./data:/app/data:ro
+      # Mount results directory for outputs
+      - ./results:/app/results
+      # Mount models directory for saved models
+      - ./models:/app/models
+    environment:
+      - PYTHONPATH=/app/src
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    
+  # Optional: Jupyter notebook service for development
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: heart-disease-jupyter
+    ports:
+      - "8888:8888"
+    volumes:
+      - .:/app
+      - ./data:/app/data
+      - ./results:/app/results
+      - ./models:/app/models
+      - ./notebooks:/app/notebooks
+    environment:
+      - PYTHONPATH=/app/src
+      - PYTHONUNBUFFERED=1
+    command: >
+      bash -c "pip install jupyter jupyterlab &&
+               jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
+               --NotebookApp.token='' --NotebookApp.password=''"
+    profiles:
+      - dev
+
+networks:
+  default:
+    name: heart-disease-network

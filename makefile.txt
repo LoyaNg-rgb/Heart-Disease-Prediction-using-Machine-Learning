@@ -1,0 +1,132 @@
+# Heart Disease Prediction - Makefile
+# ===================================
+
+.PHONY: help install install-dev test lint format clean run docker-build docker-run setup
+
+# Default target
+help:
+	@echo "Heart Disease Prediction - Available Commands"
+	@echo "=============================================="
+	@echo "setup          : Create directories and setup environment"
+	@echo "install        : Install dependencies"
+	@echo "install-dev    : Install development dependencies"
+	@echo "test           : Run tests"
+	@echo "test-cov       : Run tests with coverage"
+	@echo "lint           : Run linting checks"
+	@echo "format         : Format code with black"
+	@echo "clean          : Clean up generated files"
+	@echo "run            : Run the main analysis"
+	@echo "docker-build   : Build Docker image"
+	@echo "docker-run     : Run Docker container"
+	@echo "docker-dev     : Run development environment with Jupyter"
+
+# Setup project directories and environment
+setup:
+	@echo "Setting up project structure..."
+	mkdir -p data models results tests notebooks examples
+	@echo "✅ Project structure created"
+
+# Install dependencies
+install:
+	@echo "Installing dependencies..."
+	pip install --upgrade pip
+	pip install -r requirements.txt
+	pip install -e .
+	@echo "✅ Dependencies installed"
+
+# Install development dependencies
+install-dev: install
+	@echo "Installing development dependencies..."
+	pip install pytest pytest-cov black flake8 jupyter jupyterlab
+	@echo "✅ Development dependencies installed"
+
+# Run tests
+test:
+	@echo "Running tests..."
+	pytest tests/ -v
+
+# Run tests with coverage
+test-cov:
+	@echo "Running tests with coverage..."
+	pytest tests/ --cov=src --cov-report=term-missing --cov-report=html -v
+
+# Run linting
+lint:
+	@echo "Running linting checks..."
+	flake8 src/ tests/ --max-line-length=88 --extend-ignore=E203,W503
+	@echo "✅ Linting completed"
+
+# Format code
+format:
+	@echo "Formatting code..."
+	black src/ tests/ examples/ --line-length=88
+	@echo "✅ Code formatted"
+
+# Clean up generated files
+clean:
+	@echo "Cleaning up..."
+	find . -type f -name "*.pyc" -delete
+	find . -type d -name "__pycache__" -delete
+	find . -type d -name "*.egg-info" -exec rm -rf {} +
+	rm -rf build/ dist/ .pytest_cache/ htmlcov/ .coverage
+	rm -f models/*.pkl results/*.png results/*.jpg
+	@echo "✅ Cleanup completed"
+
+# Run main analysis
+run:
+	@echo "Running heart disease prediction analysis..."
+	python main.py
+
+# Build Docker image
+docker-build:
+	@echo "Building Docker image..."
+	docker build -t heart-disease-prediction .
+	@echo "✅ Docker image built"
+
+# Run Docker container
+docker-run: docker-build
+	@echo "Running Docker container..."
+	docker-compose up heart-disease-prediction
+
+# Run development environment with Jupyter
+docker-dev:
+	@echo "Starting development environment..."
+	docker-compose --profile dev up jupyter
+
+# Stop all Docker containers
+docker-stop:
+	@echo "Stopping Docker containers..."
+	docker-compose down
+
+# Install pre-commit hooks
+pre-commit:
+	@echo "Installing pre-commit hooks..."
+	pip install pre-commit
+	pre-commit install
+	@echo "✅ Pre-commit hooks installed"
+
+# Run security checks
+security:
+	@echo "Running security checks..."
+	pip install safety bandit
+	safety check
+	bandit -r src/
+	@echo "✅ Security checks completed"
+
+# Generate documentation
+docs:
+	@echo "Generating documentation..."
+	pip install sphinx sphinx-rtd-theme
+	sphinx-quickstart docs
+	@echo "✅ Documentation setup completed"
+
+# Full setup for new development environment
+dev-setup: setup install-dev pre-commit
+	@echo "Development environment ready!"
+	@echo "Run 'make run' to execute the analysis"
+	@echo "Run 'make test' to run tests"
+	@echo "Run 'make docker-dev' for Jupyter environment"
+
+# CI/CD pipeline simulation
+ci: lint test-cov security
+	@echo "✅ CI pipeline completed successfully"
